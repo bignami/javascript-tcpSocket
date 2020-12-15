@@ -1,5 +1,6 @@
 'use strict';
 
+const { Console } = require('console');
 const net = require('net');
 
 const res = "HTTP/1.1 200 OK\r\n"+
@@ -37,6 +38,8 @@ const server = net.createServer(function(socket) {
         let param ="";
         let key = "";
         let value = "";
+        let entityBodyLeft = "";
+        let entityBodyRight="";
         let paramObj = {};
         let contentLength = 0;
 
@@ -50,10 +53,18 @@ const server = net.createServer(function(socket) {
             paramObj.key = value;
             
             contentLength = paramObj.key.length + welcome.length;
+        }else if(data.indexOf("&")>0) {
+
+            entityBodyLeft = data.substring(data.indexOf("a=1"),data.indexOf("&"));
+            console.log(entityBodyLeft,"엔터티 바디 왼쪽입니당.");
         }
         else {
             path = resource;
         }
+        
+
+
+
         
         if(method === 'GET'){
             switch(path){
@@ -76,6 +87,12 @@ const server = net.createServer(function(socket) {
                 default :
                     socket.write(err);
                     break;
+
+            }
+        }
+        if(method == 'POST'){
+            switch(path){
+                case "/calculator":
 
             }
         }
