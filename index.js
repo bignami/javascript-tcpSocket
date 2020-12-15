@@ -32,11 +32,13 @@ const server = net.createServer(function(socket) {
         const methodAndResource =data.substring(0,data.indexOf("HTTP")).split(" ") ;
         const method = methodAndResource[0];
         const resource = methodAndResource[1];
+        const welcome = " welcome";
         let path = "";
         let param ="";
         let key = "";
         let value = "";
         let paramObj = {};
+        let contentLength = 0;
 
         if(resource.indexOf("?")>0){
             path = resource.substring(0,resource.indexOf("?"));
@@ -47,7 +49,7 @@ const server = net.createServer(function(socket) {
 
             paramObj.key = value;
             
-            
+            contentLength = paramObj.key.length + welcome.length;
         }
         else {
             path = resource;
@@ -58,14 +60,14 @@ const server = net.createServer(function(socket) {
                 case "/":
                     socket.write(res);
                     console.log(path);
-                    break;
+                    break;  
                 
                 case "/Profile":
                     socket.write("HTTP/1.1 200 OK\r\n"+
                     "Content-Type: text/html\r\n"+
-                    "Content-Length: 14\r\n"+
+                    "Content-Length: "+contentLength+"\r\n"+
                     "\r\n"
-                    +paramObj.key+" welcome");
+                    +paramObj.key+ welcome);
                     break;
 
                 case "/calculator":
