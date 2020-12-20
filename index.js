@@ -34,16 +34,27 @@ const server = net.createServer(function(socket) {
         const method = methodAndResource[0];
         const resource = methodAndResource[1];
         const welcome = " welcome";
+
         let path = "";
         let param ="";
         let key = "";
         let value = "";
+        let leftKey = "";
+        let leftValue = "";
+        let rightKey = "";
+        let rightValue = "";
         let entityBodyLeft = "";
         let entityBodyRight="";
+
         let paramObj = {};
+        let entityBobyLeftObj = {};
+        let entityBobyRightObj = {};
+
         let contentLength = 0;
+        let muitlyBobyRes = 0;
 
         if(resource.indexOf("?")>0){
+
             path = resource.substring(0,resource.indexOf("?"));
             param = resource.substring(resource.indexOf("?")+ 1);
             console.log(path, param,"PATH랑 Param");
@@ -53,18 +64,33 @@ const server = net.createServer(function(socket) {
             paramObj.key = value;
             
             contentLength = paramObj.key.length + welcome.length;
-        }else if(data.indexOf("&")>0) {
 
-            entityBodyLeft = data.substring(data.indexOf("a=1"),data.indexOf("&"));
-            console.log(entityBodyLeft,"엔터티 바디 왼쪽입니당.");
         }
         else {
             path = resource;
         }
         
+        if(data.indexOf("&")>0) {
 
+            path = resource;
+            
+            entityBodyLeft = data.substring(data.indexOf("a=1"),data.indexOf("&"));
+            entityBodyRight = data.substring(data.indexOf("&")+1);
 
+            leftKey = entityBodyLeft.substring(0,entityBodyLeft.indexOf("="));
+            leftValue = entityBodyLeft.substring(entityBodyLeft.indexOf("=") + 1);
+            rightKey = entityBodyRight.substring(0,entityBodyRight.indexOf("="));
+            rightValue = entityBodyRight.substring(entityBodyRight.indexOf("=") + 1);
 
+            entityBobyLeftObj.leftKey = leftValue;
+            entityBobyRightObj.rightKey = rightValue;
+            
+            muitlyBobyRes = entityBobyLeftObj.leftKey * entityBobyRightObj.rightKey;
+            contentLength = muitlyBobyRes.toString().length;
+
+            console.log(contentLength);
+            
+        }
         
         if(method === 'GET'){
             switch(path){
@@ -80,26 +106,36 @@ const server = net.createServer(function(socket) {
                     "\r\n"
                     +paramObj.key+ welcome);
                     break;
-
-                case "/calculator":
-                    socket.write(res);
-                    break;
+                    
                 default :
                     socket.write(err);
                     break;
 
             }
         }
-        if(method == 'POST'){
+        if(method === 'POST'){
             switch(path){
                 case "/calculator":
+                    socket.write("HTTP/1.1 200 OK\r\n"+
+                    "Content-Type: text/html\r\n"+
+                    "Content-Length: "+contentLength+"\r\n"+
+                    "\r\n"
+                    +muitlyBobyRes);
+                    console.log(path);
+                    
+                    break;
 
             }
         }
         
-        console.log(data);
-   
-        console.log(methodAndResource);
+       
+        console.log(method,path);
+
+        console.log("HTTP/1.1 200 OK\r\n"+
+        "Content-Type: application/x-www-form-urlencoded\r\n"+
+        "Content-Length: "+contentLength+"\r\n"+
+        "\r\n"
+        +muitlyBobyRes);
         
     });
     ;
