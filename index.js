@@ -145,7 +145,8 @@ const server = net.createServer(function (socket) {
 
 
         console.log(method, path);
-
+        console.log(method, path);
+        
         console.log("HTTP/1.1 200 OK\r\n" +
             "Content-Type: application/x-www-form-urlencoded\r\n" +
             "Content-Length: " + contentLength + "\r\n" +
